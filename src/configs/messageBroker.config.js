@@ -117,14 +117,14 @@ class MessageBroker {
     }
 
     switch (type) {
-      case 'VERIFICATION':
-        this.#logger.info(`Processing verification email for ${recipient}`);
-        await this.#emailService.sendVerificationEmail(recipient, data);
-        break;
-
       case 'WELCOME':
         this.#logger.info(`Processing welcome email for ${recipient}`);
         await this.#emailService.sendWelcomeEmail(recipient, data);
+        break;
+
+      case 'VERIFICATION':
+        this.#logger.info(`Processing verification email for ${recipient}`);
+        await this.#emailService.sendVerificationEmail(recipient, data);
         break;
 
       default: {

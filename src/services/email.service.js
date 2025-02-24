@@ -43,7 +43,7 @@ class EmailService {
     }
   };
 
-  sendEmail = async (to, subject, template, data) => {
+  #sendEmail = async (to, subject, template, data) => {
     try {
       const html = await this.renderTemplate(template, data);
       const emailData = {
@@ -63,7 +63,7 @@ class EmailService {
   };
 
   sendVerificationEmail = async (recipient, data) => {
-    await this.sendEmail(
+    await this.#sendEmail(
       recipient,
       'Verify Your Email Address',
       'verification',
@@ -72,7 +72,7 @@ class EmailService {
   };
 
   sendWelcomeEmail = async (recipient, data) => {
-    await this.sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
+    await this.#sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
   };
 }
 

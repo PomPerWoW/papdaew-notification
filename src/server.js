@@ -93,9 +93,16 @@ class NotificationServer {
     });
   }
 
-  close() {
-    this.#server.close();
-  }
+  close = () =>
+    new Promise((resolve, reject) => {
+      this.#server.close(err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
 }
 
 module.exports = NotificationServer;

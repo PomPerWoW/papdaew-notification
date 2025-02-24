@@ -45,11 +45,10 @@ class Application {
     const shutdown = async () => {
       try {
         await this.messageBroker.disconnect();
-        this.server.close();
-
+        await this.server.close();
         process.exit(0);
       } catch (error) {
-        this.appLogger.error('Error during shutdown:', error);
+        this.appLogger.error(`Error during shutdown: ${error.name}`, error);
         process.exit(1);
       }
     };
