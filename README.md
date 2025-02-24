@@ -30,27 +30,13 @@ The notification service handles all types of notifications (email, SMS, push) f
 services/papdaew-notification/
 ├── src/
 │   ├── configs/
-│   │   ├── config.js
-│   │   ├── database.config.js
-│   │   └── messageBroker.config.js
 │   ├── controllers/
-│   │   └── health.controller.js
 │   ├── services/
-│   │   ├── email.service.js
-│   │   └── notification.service.js
 │   ├── templates/
-│   │   ├── email/
-│   │   │   ├── verification.hbs
-│   │   │   └── welcome.hbs
-│   │   └── helpers/
-│   │       └── handlebars.js
 │   ├── utils/
-│   │   └── logger.js
 │   ├── app.js
 │   └── server.js
 ├── tests/
-│   ├── unit/
-│   └── integration/
 ├── .env.example
 ├── Dockerfile
 ├── package.json
