@@ -1,6 +1,7 @@
 const { PinoLogger } = require('@papdaew/shared');
 
 const NotificationServer = require('#notification/server.js');
+const EventSubscriber = require('#notification/events/subscribers/event.subscriber.js');
 const MessageBroker = require('#notification/configs/messageBroker.config.js');
 const Config = require('#notification/configs/config.js');
 
@@ -15,12 +16,14 @@ class Application {
     });
     this.server = new NotificationServer();
     this.messageBroker = new MessageBroker();
+    this.eventSubscriber = new EventSubscriber();
   }
 
-  initialize = () => {
+  initialize = async () => {
     this.appLogger.info('Initializing Notification Application');
     this.setupUncaughtException();
-    this.messageBroker.connect();
+    await this.messageBroker.connect();
+    await this.eventSubscriber.setupSubscriptions();
     this.server.start();
     this.setupUnhandledRejection();
     this.setupShutdown();

@@ -62,6 +62,10 @@ class EmailService {
     }
   };
 
+  sendWelcomeEmail = async (recipient, data) => {
+    await this.#sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
+  };
+
   sendVerificationEmail = async (recipient, data) => {
     await this.#sendEmail(
       recipient,
@@ -69,10 +73,6 @@ class EmailService {
       'verification',
       data
     );
-  };
-
-  sendWelcomeEmail = async (recipient, data) => {
-    await this.#sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
   };
 }
 
