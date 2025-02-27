@@ -22,7 +22,7 @@ class NotificationEventHandler {
       const data = event.data || event;
 
       if (!data.recipient || !data.type) {
-        this.#logger.error('Invalid email notification data', { event });
+        this.#logger.error(event, 'Invalid email notification data');
         return;
       }
 
@@ -57,7 +57,7 @@ class NotificationEventHandler {
         `Successfully processed email notification for: ${data.recipient}`
       );
     } catch (error) {
-      this.#logger.error('Error handling email notification event', error);
+      this.#logger.error(error, 'Error handling email notification event');
       throw error;
     }
   };

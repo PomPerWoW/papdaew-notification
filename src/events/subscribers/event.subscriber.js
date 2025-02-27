@@ -25,7 +25,7 @@ class EventSubscriber {
 
       this.#logger.info('Event subscriptions set up successfully');
     } catch (error) {
-      this.#logger.error('Failed to set up event subscriptions', error);
+      this.#logger.error(error, 'Failed to set up event subscriptions');
       throw error;
     }
   };
