@@ -13,8 +13,11 @@ class EmailService {
 
   constructor() {
     this.#config = new Config();
-    this.#logger = new PinoLogger().child({
-      service: 'Email Service',
+    this.logger = new PinoLogger({
+      name: 'EmailService',
+      level: 'info',
+      serviceVersion: process.env.SERVICE_VERSION || '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
     });
 
     this.#transporter = nodemailer.createTransport({

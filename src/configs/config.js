@@ -8,7 +8,7 @@ class Config {
     this.NODE_ENV = process.env.NODE_ENV || 'development';
     this.LOG_LEVEL = process.env.LOG_LEVEL || 'info';
     this.SERVICE_VERSION = process.env.SERVICE_VERSION || '1.0.0';
-    this.RABBITMQ_URL = process.env.RABBITMQ_URL;
+    this.RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://papdaew:papdaew123@localhost:5672';
     this.EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'nodemailer';
     this.EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@papdaew.com';
     this.EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'Papdaew';

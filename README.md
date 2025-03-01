@@ -10,8 +10,8 @@ The notification service handles all types of notifications (email, SMS, push) f
   - Password reset
   - Login alerts
 - Message queue integration (RabbitMQ)
-- Email templating (Handlebars)
-- Multiple email providers support
+- Email templating (ejs)
+- Email providers support
   - SendGrid (default)
   - NodeMailer (fallback)
 
@@ -20,9 +20,7 @@ The notification service handles all types of notifications (email, SMS, push) f
 - Node.js
 - Express.js
 - RabbitMQ
-- SendGrid/NodeMailer
-- Handlebars
-- Jest (testing)
+- NodeMailer
 
 ## Project Structure
 
@@ -31,9 +29,9 @@ services/papdaew-notification/
 ├── src/
 │   ├── configs/
 │   ├── controllers/
+│   ├── events/
 │   ├── services/
 │   ├── templates/
-│   ├── utils/
 │   ├── app.js
 │   └── server.js
 ├── tests/
@@ -63,17 +61,7 @@ services/papdaew-notification/
    cp .env.example .env
    ```
 
-3. **Database Setup**
-
-```bash
-# Start PostgreSQL (if using Docker)
-docker-compose up -d postgres
-
-# Run database migrations
-npx prisma migrate dev
-```
-
-4. Run the service:
+3. Run the service:
 
    ```bash
    # Development
