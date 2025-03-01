@@ -28,10 +28,7 @@ class NotificationEventHandler {
 
       switch (data.type) {
         case 'WELCOME':
-          await this.#emailService.sendWelcomeEmail(
-            data.recipient,
-            data.data.username
-          );
+          await this.#emailService.sendWelcomeEmail(data.recipient, data.data);
           break;
 
         case 'VERIFICATION':

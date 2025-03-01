@@ -16,7 +16,6 @@ const EMAIL_NOTIFICATION = {
         orderDetails: { type: 'object' },
       },
     },
-    timestamp: { type: 'string', format: 'date-time' },
   },
 };
 
