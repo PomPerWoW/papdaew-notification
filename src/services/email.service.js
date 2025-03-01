@@ -38,7 +38,7 @@ class EmailService {
       const html = await ejs.renderFile(templatePath, data);
       return html;
     } catch (error) {
-      this.#logger.error(`Failed to render email template: ${template}`, error);
+      this.#logger.error(error, `Failed to render email template: ${template}`);
       throw error;
     }
   };
@@ -57,9 +57,13 @@ class EmailService {
 
       this.#logger.info(`Email sent successfully to ${to}`);
     } catch (error) {
-      this.#logger.error(`Failed to send email to ${to}`, error);
+      this.#logger.error(error, `Failed to send email to ${to}`);
       throw error;
     }
+  };
+
+  sendWelcomeEmail = async (recipient, data) => {
+    await this.#sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
   };
 
   sendVerificationEmail = async (recipient, data) => {
@@ -69,10 +73,6 @@ class EmailService {
       'verification',
       data
     );
-  };
-
-  sendWelcomeEmail = async (recipient, data) => {
-    await this.#sendEmail(recipient, 'Welcome to Papdaew!', 'welcome', data);
   };
 }
 
