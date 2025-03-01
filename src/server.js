@@ -11,6 +11,8 @@ const {
   PinoLogger,
 } = require('@papdaew/shared');
 
+const SocketService = require('#notification/services/socket.service.js');
+const NotificationRoutes = require('#notification/routes/notification.routes.js');
 const HealthRoutes = require('#notification/routes/health.route.js');
 const Config = require('#notification/configs/config.js');
 
@@ -20,11 +22,15 @@ class NotificationServer {
   #logger;
   #config;
   #healthRoutes;
+  #notificationRoutes;
+  #socketService;
 
   constructor() {
     this.#app = express();
     this.#config = new Config();
     this.#healthRoutes = new HealthRoutes();
+    this.#notificationRoutes = new NotificationRoutes();
+    this.#socketService = new SocketService();
     this.#logger = new PinoLogger().child({
       service: 'Notification Server',
     });
@@ -38,7 +44,7 @@ class NotificationServer {
     return this.#app;
   }
 
-  start() {
+  async start() {
     this.setup();
     this.#startServer(this.#app);
   }
@@ -58,6 +64,7 @@ class NotificationServer {
 
   #setupRoutes(app) {
     app.use('/', this.#healthRoutes.setup());
+    app.use('/api/v1/notifications', this.#notificationRoutes.setup());
   }
 
   #setupErrorHandlers(app) {
@@ -86,6 +93,9 @@ class NotificationServer {
   #startHttpServer(app) {
     this.#server = http.createServer(app);
 
+    // Initialize Socket.IO
+    this.#socketService.initialize(this.#server);
+
     this.#server.listen(this.#config.PORT, () => {
       this.#logger.info(
         `Notification service is running on port ${this.#config.PORT}`
@@ -93,8 +103,8 @@ class NotificationServer {
     });
   }
 
-  close = () =>
-    new Promise((resolve, reject) => {
+  close = async () =>
+    await new Promise((resolve, reject) => {
       this.#server.close(err => {
         if (err) {
           reject(err);

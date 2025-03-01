@@ -3,6 +3,7 @@ const { PinoLogger } = require('@papdaew/shared');
 const NotificationServer = require('#notification/server.js');
 const EventSubscriber = require('#notification/events/subscribers/event.subscriber.js');
 const MessageBroker = require('#notification/configs/messageBroker.config.js');
+const Database = require('#notification/configs/database.config.js');
 const Config = require('#notification/configs/config.js');
 
 class Application {
@@ -15,6 +16,7 @@ class Application {
       environment: this.config.NODE_ENV,
     });
     this.server = new NotificationServer();
+    this.database = new Database();
     this.messageBroker = new MessageBroker();
     this.eventSubscriber = new EventSubscriber();
   }
@@ -22,6 +24,7 @@ class Application {
   initialize = async () => {
     this.appLogger.info('Initializing Notification Application');
     this.setupUncaughtException();
+    await this.database.connect();
     await this.messageBroker.connect();
     await this.eventSubscriber.setupSubscriptions();
     this.server.start();
@@ -47,6 +50,7 @@ class Application {
   setupShutdown = () => {
     const shutdown = async () => {
       try {
+        await this.database.disconnect();
         await this.messageBroker.disconnect();
         await this.server.close();
         process.exit(0);
