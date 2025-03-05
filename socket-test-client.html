@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Papdaew Notification Socket.IO Test Client</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+      }
+      .connected {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .disconnected {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .notification-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+      }
+      .notification-item {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+      .notification-item:last-child {
+        border-bottom: none;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      button {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 15px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      pre {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Papdaew Notification Socket.IO Test Client</h1>
+
+      <div class="card">
+        <h2>Connection Status</h2>
+        <div id="status" class="status disconnected">Disconnected</div>
+        <div class="form-group">
+          <label for="serverUrl">Server URL:</label>
+          <input
+            type="text"
+            id="serverUrl"
+            value="http://localhost:3003"
+            style="width: 250px"
+          />
+        </div>
+        <div class="form-group">
+          <label for="userId">User ID (for joining room):</label>
+          <input
+            type="text"
+            id="userId"
+            placeholder="Enter user ID"
+            style="width: 250px"
+          />
+        </div>
+        <div>
+          <button id="connectBtn">Connect</button>
+          <button id="disconnectBtn" disabled>Disconnect</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Notifications</h2>
+        <div class="notification-list" id="notifications">
+          <div class="notification-item">No notifications received yet.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Socket Events</h2>
+        <pre id="events">No events logged yet.</pre>
+      </div>
+    </div>
+
+    <script>
+      let socket;
+      const statusEl = document.getElementById('status');
+      const notificationsEl = document.getElementById('notifications');
+      const eventsEl = document.getElementById('events');
+      const connectBtn = document.getElementById('connectBtn');
+      const disconnectBtn = document.getElementById('disconnectBtn');
+      const serverUrlInput = document.getElementById('serverUrl');
+      const userIdInput = document.getElementById('userId');
+
+      // Log events to the events panel
+      function logEvent(event, data) {
+        const timestamp = new Date().toLocaleTimeString();
+        const dataStr = data ? JSON.stringify(data, null, 2) : '';
+        eventsEl.innerHTML = `[${timestamp}] ${event} ${dataStr}\n${eventsEl.innerHTML}`;
+      }
+
+      // Add a notification to the notifications panel
+      function addNotification(notification) {
+        if (
+          notificationsEl.innerHTML.includes('No notifications received yet.')
+        ) {
+          notificationsEl.innerHTML = '';
+        }
+
+        const notificationEl = document.createElement('div');
+        notificationEl.className = 'notification-item';
+        notificationEl.innerHTML = `
+                <strong>${new Date().toLocaleTimeString()}</strong>
+                <pre>${JSON.stringify(notification, null, 2)}</pre>
+            `;
+        notificationsEl.prepend(notificationEl);
+      }
+
+      // Update the connection status
+      function updateStatus(connected) {
+        if (connected) {
+          statusEl.className = 'status connected';
+          statusEl.textContent = 'Connected';
+          connectBtn.disabled = true;
+          disconnectBtn.disabled = false;
+        } else {
+          statusEl.className = 'status disconnected';
+          statusEl.textContent = 'Disconnected';
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        }
+      }
+
+      // Connect to the Socket.IO server
+      connectBtn.addEventListener('click', () => {
+        const serverUrl = serverUrlInput.value.trim();
+        if (!serverUrl) {
+          alert('Please enter a server URL');
+          return;
+        }
+
+        try {
+          // Initialize Socket.IO connection
+          socket = io(serverUrl);
+
+          // Connection events
+          socket.on('connect', () => {
+            updateStatus(true);
+            logEvent('Connected to server', { socketId: socket.id });
+
+            // Join user-specific room if user ID is provided
+            const userId = userIdInput.value.trim();
+            if (userId) {
+              socket.emit('join', userId);
+              logEvent('Joined room', { userId });
+            }
+          });
+
+          socket.on('disconnect', () => {
+            updateStatus(false);
+            logEvent('Disconnected from server');
+          });
+
+          socket.on('connect_error', error => {
+            updateStatus(false);
+            logEvent('Connection error', { message: error.message });
+          });
+
+          // Notification events
+          socket.on('notification', notification => {
+            logEvent('Received notification', notification);
+            addNotification(notification);
+          });
+
+          socket.on('unread_count', data => {
+            logEvent('Unread count updated', data);
+          });
+        } catch (error) {
+          logEvent('Error initializing connection', { message: error.message });
+        }
+      });
+
+      // Disconnect from the Socket.IO server
+      disconnectBtn.addEventListener('click', () => {
+        if (socket) {
+          socket.disconnect();
+          socket = null;
+        }
+      });
+
+      // Initialize
+      updateStatus(false);
+      logEvent('Client initialized');
+    </script>
+  </body>
+</html>
