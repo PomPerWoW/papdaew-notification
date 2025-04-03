@@ -3,6 +3,7 @@ const addFormats = require('ajv-formats');
 const Ajv = require('ajv');
 const { PinoLogger } = require('@papdaew/shared');
 
+const queueEventSchemas = require('#notification/events/schemas/queue.events.js');
 const notificationEventSchemas = require('#notification/events/schemas/notification.events.js');
 const Config = require('#notification/configs/config.js');
 
@@ -36,6 +37,11 @@ class MessageBroker {
   #registerEventSchemas() {
     // Register notification event schemas
     Object.entries(notificationEventSchemas).forEach(([eventName, schema]) => {
+      this.#validator.addSchema(schema, eventName);
+    });
+
+    // Register queue event schemas
+    Object.entries(queueEventSchemas).forEach(([eventName, schema]) => {
       this.#validator.addSchema(schema, eventName);
     });
   }

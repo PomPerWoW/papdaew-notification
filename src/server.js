@@ -51,7 +51,7 @@ class NotificationServer {
 
   #setupSecurityMiddleware(app) {
     app.set('trust proxy', true);
-    app.use(cors());
+    app.use(cors({ origin: 'http://localhost:3000' }));
     app.use(helmet());
     app.use(hpp());
   }
@@ -83,19 +83,16 @@ class NotificationServer {
 
   async #startServer(app) {
     try {
-      this.#startHttpServer(app);
+      this.#server = http.createServer(app);
+      this.#startHttpServer();
+      this.#socketService.initialize(this.#server);
     } catch (error) {
       this.#logger.error(error, 'Failed to start server');
       process.exit(1);
     }
   }
 
-  #startHttpServer(app) {
-    this.#server = http.createServer(app);
-
-    // Initialize Socket.IO
-    this.#socketService.initialize(this.#server);
-
+  #startHttpServer() {
     this.#server.listen(this.#config.PORT, () => {
       this.#logger.info(
         `Notification service is running on port ${this.#config.PORT}`

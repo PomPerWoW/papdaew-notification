@@ -21,6 +21,8 @@ class SocketService {
   initialize(server) {
     this.#io = new Server(server, {
       cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
       },
     });
@@ -75,8 +77,8 @@ class SocketService {
       return;
     }
 
-    this.#io.to(`user:${userId}`).emit('unread_count', { count });
-    this.#logger.info({ userId, count }, 'Unread count updated for user');
+    this.#io.emit('unread_count', { count });
+    this.#logger.info({ count }, 'Unread count updated for user');
   }
 
   get io() {

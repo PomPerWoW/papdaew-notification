@@ -18,9 +18,36 @@ class EventSubscriber {
 
   setupSubscriptions = async () => {
     try {
+      // Subscribe to email notifications
       await this.#messageBroker.subscribeDirect(
         'email_notifications',
         this.#notificationEventHandler.handleEmailNotification
+      );
+
+      // Subscribe to queue events
+      await this.#messageBroker.subscribeDirect(
+        'queue.created',
+        this.#notificationEventHandler.handleQueueEvent
+      );
+
+      await this.#messageBroker.subscribeDirect(
+        'queue.updated',
+        this.#notificationEventHandler.handleQueueEvent
+      );
+
+      await this.#messageBroker.subscribeDirect(
+        'queue.user.enqueued',
+        this.#notificationEventHandler.handleQueueEvent
+      );
+
+      await this.#messageBroker.subscribeDirect(
+        'queue.user.dequeued',
+        this.#notificationEventHandler.handleQueueEvent
+      );
+
+      await this.#messageBroker.subscribeDirect(
+        'queue.user.exited',
+        this.#notificationEventHandler.handleQueueEvent
       );
 
       this.#logger.info('Event subscriptions set up successfully');
