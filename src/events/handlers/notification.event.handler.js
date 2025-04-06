@@ -48,6 +48,13 @@ class NotificationEventHandler {
           );
           break;
 
+        case 'VENDOR_INVITATION':
+          await this.#emailService.sendVendorInvitationEmail(
+            data.recipient,
+            data.data
+          );
+          break;
+
         default:
           this.#logger.info(`Unhandled email notification type: ${data.type}`);
           throw new Error(`Unhandled email notification type: ${data.type}`);

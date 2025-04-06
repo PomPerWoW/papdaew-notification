@@ -74,6 +74,15 @@ class EmailService {
       data
     );
   };
+
+  sendVendorInvitationEmail = async (recipient, data) => {
+    await this.#sendEmail(
+      recipient,
+      "You've Been Invited to Register as a Vendor on Papdaew",
+      'vendor-invitation',
+      data
+    );
+  };
 }
 
 module.exports = EmailService;
